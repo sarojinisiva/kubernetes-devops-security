@@ -25,6 +25,19 @@ pipeline {
               sh "mvn clean package -DskipTests=true"
               archive 'target/*.jar' //so that they can be downloaded later
             }
+           steps {
+             script {
+                    try {
+                        sh "mvn clean test"
+                    } finally {
+                        // Publish JUnit Test Results
+                        junit '**/target/surefire-reports/*.xml'
+
+                        // Publish JaCoCo Coverage Report
+                        jacoco(execPattern: '**/target/jacoco.exec')
+                    }
+                }
+           }
         }   
     }
 }
