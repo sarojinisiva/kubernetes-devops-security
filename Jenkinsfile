@@ -1,10 +1,7 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven-3.8.8'  // Make sure Maven is installed in Jenkins
-        jdk 'JDK-11'         // Ensure the correct JDK version is installed
-    }
+   
 
     stages {
           stage('git version check') {
