@@ -1,8 +1,13 @@
 pipeline {
-  agent any
+    agent any
 
-  stages {
-    stage('git version check') {
+    tools {
+        maven 'Maven-3.8.8'  // Make sure Maven is installed in Jenkins
+        jdk 'JDK-11'         // Ensure the correct JDK version is installed
+    }
+
+    stages {
+          stage('git version check') {
             steps {
               sh "git version"
              
@@ -20,13 +25,9 @@ pipeline {
              
             }
         } 
-    stage('Build Artifact') {
+        stage('Unit Tests - JUnit and JaCoCo') {
             steps {
-              sh "mvn clean package -DskipTests=true"
-              archive 'target/*.jar' //so that they can be downloaded later
-            }
-           steps {
-             script {
+                script {
                     try {
                         sh "mvn clean test"
                     } finally {
@@ -37,7 +38,13 @@ pipeline {
                         jacoco(execPattern: '**/target/jacoco.exec')
                     }
                 }
-           }
-        }   
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: '**/target/site/jacoco/index.html', fingerprint: true
+        }
     }
 }
